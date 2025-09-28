@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:page_video/gen/assets.gen.dart';
+import 'package:nvmms_page_video/gen/assets.gen.dart';
 import 'package:preload_page_view/preload_page_view.dart';
 import 'package:vibration/vibration.dart';
 import 'package:video_player/video_player.dart';

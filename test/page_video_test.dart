@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
-import 'package:page_video/page_video.dart';
+import 'package:nvmms_page_video/page_video.dart';
 
 void main() {
   testWidgets('PageVideo basic usage smoke test', (WidgetTester tester) async {
