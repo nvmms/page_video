@@ -221,7 +221,6 @@ class _PageVideoStte extends State<PageVideo> {
       initialPage: widget.initialIndex ?? 0,
     );
     _pageController.addListener(pageListener);
-    // _pageController.previousPage(duration: duration, curve: curve)
   }
 
   void pageListener() {}
@@ -267,6 +266,7 @@ class _PageVideoStte extends State<PageVideo> {
             activeIndex: _activeIndex,
             uri: widget.buildUri(index),
             playEnd: widget.buildPlayEndWidget?.call(context, index),
+            loop: widget.loop,
             child: widget.child?.call(context, index),
           );
         },

@@ -10,11 +10,12 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  video_player: 2.10.0
-  preload_page_view: 0.2.0
+  video_player: ^2.10.0
+  preload_page_view: ^0.2.0
   flutter_svg: ^2.2.1
   visibility_detector: ^0.4.0+2
   vibration: ^3.1.4
+  vector_graphics: ^1.1.19
 
 dev_dependencies:
   flutter_test:
