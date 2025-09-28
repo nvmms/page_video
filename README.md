@@ -21,12 +21,7 @@
 
 ```yaml
 dependencies:
-  page_video:
-    path: package/page_video
-  video_player: ^2.8.1
-  preload_page_view: ^0.2.0
-  vibration: ^1.7.4
-  visibility_detector: ^0.4.0
+  page_video: ^0.0.1
 ```
 
 ### 2. 使用示例
