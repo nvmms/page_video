@@ -33,6 +33,7 @@ class _PageVideoItemState extends State<_PageVideoItem> {
   bool isUserPause = false;
   double playSpeed = 1;
   bool isPlayend = false;
+  bool isPlaying = false;
 
   Uri get uri => widget.uri;
 
@@ -75,6 +76,10 @@ class _PageVideoItemState extends State<_PageVideoItem> {
         }
       }
     }
+    if (controller.value.isPlaying != isPlaying) {
+      isPlaying = controller.value.isPlaying;
+      setState(() {});
+    }
   }
 
   @override
@@ -113,7 +118,7 @@ class _PageVideoItemState extends State<_PageVideoItem> {
     controller.setPlaybackSpeed(speed);
     playSpeed = speed;
     if (speed > 1 && await Vibration.hasVibrator()) {
-      Vibration.vibrate();
+      Vibration.vibrate(duration: 103);
     }
     setState(() {});
   }
@@ -142,20 +147,20 @@ class _PageVideoItemState extends State<_PageVideoItem> {
             },
           ),
         if (widget.playEnd != null && isPlayend) widget.playEnd!,
-        if (widget.child != null)
-          Positioned.fill(
-            child: GestureDetector(
-              onTap: onVideoTap,
-              onLongPressStart: (e) => setPlaySpeed(2),
-              onLongPressEnd: (e) => setPlaySpeed(1),
-              child: widget.child!,
-            ),
+        Positioned.fill(
+          child: GestureDetector(
+            onTap: onVideoTap,
+            onLongPressStart: (e) => setPlaySpeed(2),
+            onLongPressEnd: (e) => setPlaySpeed(1),
+            child: widget.child,
           ),
+        ),
         if (isUserPause)
           GestureDetector(
             onTap: onVideoTap,
             child: Center(
-              child: Assets.icons.play.svg(width: 80, package: "page_video"),
+              child:
+                  Assets.icons.play.svg(width: 80, package: "nvmms_page_video"),
             ),
           ),
         if (playSpeed != 1)
