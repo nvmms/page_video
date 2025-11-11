@@ -34,6 +34,8 @@ class _PageVideoItemState extends State<_PageVideoItem> {
   double playSpeed = 1;
   bool isPlayend = false;
   bool isPlaying = false;
+  double videoTotal = 0.0;
+  ValueNotifier<double> videoPosition = ValueNotifier(0.0);
 
   Uri get uri => widget.uri;
 
@@ -49,6 +51,7 @@ class _PageVideoItemState extends State<_PageVideoItem> {
     }
 
     controller.initialize().then((e) {
+      videoTotal = controller.value.duration.inMicroseconds.toDouble();
       if (widget.activeIndex == widget.currentIndex) {
         controller.play();
       }
@@ -59,6 +62,7 @@ class _PageVideoItemState extends State<_PageVideoItem> {
   }
 
   void controllerListener() {
+    videoPosition.value = controller.value.position.inMicroseconds.toDouble();
     if (!widget.loop) {
       // 判断是否播放结束
       if (controller.value.isInitialized &&
@@ -147,6 +151,30 @@ class _PageVideoItemState extends State<_PageVideoItem> {
             },
           ),
         if (widget.playEnd != null && isPlayend) widget.playEnd!,
+        Positioned(
+          left: 0,
+          right: 0,
+          bottom: 0,
+          child: ValueListenableBuilder(
+            valueListenable: videoPosition,
+            builder: (context, value, child) {
+              return SliderTheme(
+                data: SliderTheme.of(context).copyWith(
+                  thumbShape: RoundSliderThumbShape(enabledThumbRadius: 0.0),
+                  overlayShape: RoundSliderOverlayShape(overlayRadius: 0.0),
+                  trackHeight: 2.0,
+                ),
+                child: Slider(
+                  padding: EdgeInsets.zero,
+                  min: 0,
+                  max: videoTotal,
+                  value: value,
+                  onChanged: (e) {},
+                ),
+              );
+            },
+          ),
+        ),
         Positioned.fill(
           child: GestureDetector(
             onTap: onVideoTap,
@@ -206,7 +234,7 @@ class PageVideo extends StatefulWidget {
   final Uri Function(int index) buildUri;
   final Widget Function(BuildContext context, int index)? child;
   final Widget Function(BuildContext context, int index)? buildPlayEndWidget;
-  final ValueChanged? onPageChanged;
+  final ValueChanged<int>? onPageChanged;
   final Axis scrollDirection;
   final int preloadPagesCount;
   final bool loop;
