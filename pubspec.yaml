@@ -1,6 +1,6 @@
 name: nvmms_page_video
 description: A Flutter widget for video paging with preload, autoplay, gestures, and feed-like scrolling.
-version: 0.0.5
+version: 0.0.6
 homepage: https://github.com/nvmms/page_video
 
 environment:
