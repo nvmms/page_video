@@ -1,3 +1,7 @@
+## 0.0.8
+
+* fixed:修复backgroundColor设置错误bug
+
 ## 0.0.7
 
 * refact:修复视频进度条拖动

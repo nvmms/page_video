@@ -141,7 +141,6 @@ class _PageVideoItemState extends State<_PageVideoItem> {
       children: [
         /// 占位背景
         Container(
-          // color: Colors.amber,
           color: widget.backgroundColor ??
               ThemeData.dark().bottomNavigationBarTheme.backgroundColor ??
               ThemeData.dark().colorScheme.surface,
@@ -281,6 +280,7 @@ class PageVideo extends StatefulWidget {
     this.scrollDirection = Axis.vertical,
     this.preloadPagesCount = 3,
     this.loop = false,
+    this.backgroundColor,
   });
   final int itemCount;
   final int? initialIndex;
@@ -291,6 +291,7 @@ class PageVideo extends StatefulWidget {
   final Axis scrollDirection;
   final int preloadPagesCount;
   final bool loop;
+  final Color? backgroundColor;
 
   @override
   State<StatefulWidget> createState() => _PageVideoStte();
@@ -353,6 +354,7 @@ class _PageVideoStte extends State<PageVideo> {
             uri: widget.buildUri(index),
             playEnd: widget.buildPlayEndWidget?.call(context, index),
             loop: widget.loop,
+            backgroundColor: widget.backgroundColor,
             child: widget.child?.call(context, index),
           );
         },
