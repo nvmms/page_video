@@ -14,6 +14,7 @@ class _PageVideoItem extends StatefulWidget {
   final int activeIndex;
   final Widget? playEnd;
   final bool loop;
+  final Color? backgroundColor;
 
   const _PageVideoItem({
     required this.uri,
@@ -22,6 +23,7 @@ class _PageVideoItem extends StatefulWidget {
     required this.activeIndex,
     this.playEnd,
     this.loop = false,
+    this.backgroundColor,
   });
 
   @override
@@ -36,6 +38,7 @@ class _PageVideoItemState extends State<_PageVideoItem> {
   bool isPlaying = false;
   double videoTotal = 0.0;
   ValueNotifier<double> videoPosition = ValueNotifier(0.0);
+  ValueNotifier<bool> isDragSlider = ValueNotifier(false);
 
   Uri get uri => widget.uri;
 
@@ -62,7 +65,9 @@ class _PageVideoItemState extends State<_PageVideoItem> {
   }
 
   void controllerListener() {
-    videoPosition.value = controller.value.position.inMicroseconds.toDouble();
+    if (!isDragSlider.value) {
+      videoPosition.value = controller.value.position.inMicroseconds.toDouble();
+    }
     if (!widget.loop) {
       // 判断是否播放结束
       if (controller.value.isInitialized &&
@@ -134,7 +139,15 @@ class _PageVideoItemState extends State<_PageVideoItem> {
     }
     return Stack(
       children: [
-        Container(color: Colors.black),
+        /// 占位背景
+        Container(
+          // color: Colors.amber,
+          color: widget.backgroundColor ??
+              ThemeData.dark().bottomNavigationBarTheme.backgroundColor ??
+              ThemeData.dark().colorScheme.surface,
+        ),
+
+        /// 视频播放器
         if (controller.value.isInitialized && !isPlayend)
           VisibilityDetector(
             key: ValueKey(widget.currentIndex),
@@ -150,47 +163,87 @@ class _PageVideoItemState extends State<_PageVideoItem> {
               }
             },
           ),
+
+        /// 播放结束组件
         if (widget.playEnd != null && isPlayend) widget.playEnd!,
+
+        /// 内容组件，兼具暂停、播放、倍速功能
+        Positioned(
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          child: Container(
+            child: GestureDetector(
+              onTap: onVideoTap,
+              onLongPressStart: (e) => setPlaySpeed(2),
+              onLongPressEnd: (e) => setPlaySpeed(1),
+              child: ValueListenableBuilder(
+                valueListenable: isDragSlider,
+                builder: (context, value, child) {
+                  return AnimatedOpacity(
+                    opacity: value ? 0 : 1,
+                    duration: Duration(milliseconds: 100),
+                    child: widget.child,
+                  );
+                },
+              ),
+            ),
+          ),
+        ),
+
+        /// 底部进度条
         Positioned(
           left: 0,
           right: 0,
           bottom: 0,
+          height: 2,
           child: ValueListenableBuilder(
             valueListenable: videoPosition,
             builder: (context, value, child) {
               return SliderTheme(
                 data: SliderTheme.of(context).copyWith(
-                  thumbShape: RoundSliderThumbShape(enabledThumbRadius: 0.0),
+                  thumbShape: const RoundSliderThumbShape(
+                    enabledThumbRadius: 2,
+                  ), // 默认 6
                   overlayShape: RoundSliderOverlayShape(overlayRadius: 0.0),
                   trackHeight: 2.0,
+                  activeTrackColor: Colors.white,
+                  inactiveTrackColor: Colors.white30,
+                  thumbColor: Colors.white,
                 ),
                 child: Slider(
-                  padding: EdgeInsets.zero,
+                  padding: EdgeInsets.symmetric(horizontal: 10),
                   min: 0,
                   max: videoTotal,
                   value: value,
-                  onChanged: (e) {},
+                  onChangeStart: (e) {
+                    isDragSlider.value = true;
+                  },
+                  onChangeEnd: (e) {
+                    isDragSlider.value = false;
+                    controller.seekTo(Duration(microseconds: e.toInt()));
+                  },
+                  onChanged: (e) {
+                    videoPosition.value = e;
+                  },
                 ),
               );
             },
           ),
         ),
-        Positioned.fill(
-          child: GestureDetector(
-            onTap: onVideoTap,
-            onLongPressStart: (e) => setPlaySpeed(2),
-            onLongPressEnd: (e) => setPlaySpeed(1),
-            child: widget.child,
-          ),
-        ),
+
+        /// 暂停图标
         if (isUserPause)
           GestureDetector(
             onTap: onVideoTap,
             child: Center(
               child:
-                  Assets.icons.play.svg(width: 80, package: "nvmms_page_video"),
+                  Assets.icons.play.svg(width: 68, package: "nvmms_page_video"),
             ),
           ),
+
+        /// 倍速播放倍率组件
         if (playSpeed != 1)
           Positioned(
             top: kToolbarHeight,
