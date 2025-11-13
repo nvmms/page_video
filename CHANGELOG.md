@@ -1,3 +1,7 @@
+## 0.0.9
+
+* update:修改进度条拖动时高度
+
 ## 0.0.8
 
 * fixed:修复backgroundColor设置错误bug

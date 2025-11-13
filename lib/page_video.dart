@@ -138,6 +138,7 @@ class _PageVideoItemState extends State<_PageVideoItem> {
       return Container();
     }
     return Stack(
+      clipBehavior: Clip.none,
       children: [
         /// 占位背景
         Container(
@@ -196,37 +197,48 @@ class _PageVideoItemState extends State<_PageVideoItem> {
           left: 0,
           right: 0,
           bottom: 0,
-          height: 2,
           child: ValueListenableBuilder(
             valueListenable: videoPosition,
             builder: (context, value, child) {
-              return SliderTheme(
-                data: SliderTheme.of(context).copyWith(
-                  thumbShape: const RoundSliderThumbShape(
-                    enabledThumbRadius: 2,
-                  ), // 默认 6
-                  overlayShape: RoundSliderOverlayShape(overlayRadius: 0.0),
-                  trackHeight: 2.0,
-                  activeTrackColor: Colors.white,
-                  inactiveTrackColor: Colors.white30,
-                  thumbColor: Colors.white,
-                ),
-                child: Slider(
-                  padding: EdgeInsets.symmetric(horizontal: 10),
-                  min: 0,
-                  max: videoTotal,
-                  value: value,
-                  onChangeStart: (e) {
-                    isDragSlider.value = true;
-                  },
-                  onChangeEnd: (e) {
-                    isDragSlider.value = false;
-                    controller.seekTo(Duration(microseconds: e.toInt()));
-                  },
-                  onChanged: (e) {
-                    videoPosition.value = e;
-                  },
-                ),
+              return ValueListenableBuilder(
+                valueListenable: isDragSlider,
+                builder: (context, _isDragSlider, child) {
+                  double height = _isDragSlider ? 6 : 2;
+                  return AnimatedContainer(
+                    duration: Duration(milliseconds: 100),
+                    curve: Curves.easeInOut,
+                    height: height,
+                    child: SliderTheme(
+                      data: SliderTheme.of(context).copyWith(
+                        thumbShape: RoundSliderThumbShape(
+                          enabledThumbRadius: height,
+                        ), // 默认 6
+                        overlayShape:
+                            RoundSliderOverlayShape(overlayRadius: 0.0),
+                        trackHeight: height,
+                        activeTrackColor: Colors.white,
+                        inactiveTrackColor: Colors.white30,
+                        thumbColor: Colors.white,
+                      ),
+                      child: Slider(
+                        padding: EdgeInsets.symmetric(horizontal: 10),
+                        min: 0,
+                        max: videoTotal,
+                        value: value,
+                        onChangeStart: (e) {
+                          isDragSlider.value = true;
+                        },
+                        onChangeEnd: (e) {
+                          isDragSlider.value = false;
+                          controller.seekTo(Duration(microseconds: e.toInt()));
+                        },
+                        onChanged: (e) {
+                          videoPosition.value = e;
+                        },
+                      ),
+                    ),
+                  );
+                },
               );
             },
           ),
